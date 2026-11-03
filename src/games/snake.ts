@@ -69,7 +69,9 @@ export class Snake extends Mode {
   }
 
   interval() {
-    return Math.max(0.055, 0.13 / this.ctx.speed);
+    const base = Math.max(0.06, 0.14 / this.ctx.speed);
+    // Slow right down while the maze grows: tighter corridors need more time to steer.
+    return this.morphing ? base * 1.6 : base;
   }
 
   targetLen() {
@@ -95,7 +97,7 @@ export class Snake extends Mode {
     return '← ↑ → ↓ / swipe · zatáčaj';
   }
   morphHint() {
-    return 'Zjedz čerešne a zmenši sa na 1';
+    return 'Zjedz čerešne a zmenši sa na 1\nsteny ťa teraz nezabijú';
   }
 
   protected override onMorphStart() {
@@ -159,8 +161,9 @@ export class Snake extends Mode {
 
   private step() {
     if (this.queue.length) this.dir = this.queue.shift()!;
-    const [dx, dy] = DV[this.dir];
     const h = this.body[0];
+    if (this.morphing) this.autoSteer(h);
+    const [dx, dy] = DV[this.dir];
     const n = { c: h.c + dx, r: h.r + dy };
     if (this.blocked(n.c, n.r)) return this.die();
     this.body.unshift(n);
@@ -207,6 +210,32 @@ export class Snake extends Mode {
       }
     }
     if (this.morphing) this.shrinkTo(this.targetLen());
+  }
+
+  /**
+   * Mild morph: instead of crashing into a wall, turn into the free side
+   * (the one with more open space ahead). Only the body can still kill you.
+   */
+  private autoSteer(h: Cell) {
+    const isWall = (c: number, r: number) => isBorder(c, r) || this.wallState[idx(c, r)] === 2;
+    const [dx, dy] = DV[this.dir];
+    if (!isWall(h.c + dx, h.r + dy)) return;
+    const room = (d: Dir) => {
+      let n = 0;
+      let c = h.c;
+      let r = h.r;
+      while (n < 20) {
+        c += DV[d][0];
+        r += DV[d][1];
+        if (this.blocked(c, r)) break;
+        n++;
+      }
+      return n;
+    };
+    const sides = (['up', 'down', 'left', 'right'] as Dir[]).filter((d) => d !== this.dir && d !== OPP[this.dir] && room(d) > 0);
+    if (!sides.length) return;
+    this.dir = sides.sort((a, b) => room(b) - room(a))[0];
+    this.queue = [];
   }
 
   private blocked(c: number, r: number) {
