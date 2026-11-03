@@ -11,6 +11,9 @@ const PH = 0.5; // paddle thickness
 const BALL_R = 0.25;
 const LEFT = 1;
 const RIGHT = COLS - 1;
+const PW = 4; // player paddle width in cells
+const MAX_SPEED = 15;
+const CPU_PER_LIFE = 3;
 
 export interface Ball {
   x: number;
@@ -36,6 +39,8 @@ export class Paddle extends Mode {
   ball: Ball;
   serveT = 0;
   points = 0;
+  /** CPU points; every CPU_PER_LIFE of them costs a life. */
+  cpu = 0;
   target: number;
   speed0: number;
   dead = false;
@@ -49,7 +54,7 @@ export class Paddle extends Mode {
   constructor(ctx: Ctx, init: PaddleInit) {
     super(ctx);
     this.px = init.playerX;
-    this.speed0 = 9 * Math.min(ctx.speed, 1.6);
+    this.speed0 = 7 * Math.min(ctx.speed, 1.5);
     this.target = 5 + Math.floor((ctx.round - 1) / 2);
     if (init.ball) {
       this.ball = { ...init.ball };
@@ -62,7 +67,7 @@ export class Paddle extends Mode {
   }
 
   pw() {
-    return this.morphing ? lerp(3, 1.5, this.p) : 3;
+    return this.morphing ? lerp(PW, 1.5, this.p) : PW;
   }
   aw() {
     return this.morphing ? Math.max(0, 3 * (1 - this.p * 2.5)) : 3;
@@ -70,7 +75,7 @@ export class Paddle extends Mode {
 
   milestone(): Milestone {
     if (this.morphing) return { cur: this.passed, target: 6, label: 'potrubia' };
-    return { cur: this.points, target: this.target, label: 'body' };
+    return { cur: this.points, target: this.target, label: `CPU ${this.cpu}/${CPU_PER_LIFE} · body` };
   }
 
   hint() {
@@ -128,12 +133,13 @@ export class Paddle extends Mode {
     // player paddle
     if (b.vy > 0 && b.y + BALL_R >= PADDLE_Y && b.y - BALL_R <= PADDLE_Y + PH && Math.abs(b.x - this.px) <= hw + BALL_R) {
       const off = clamp((b.x - this.px) / hw, -1, 1);
-      const sp = Math.min(22, Math.hypot(b.vx, b.vy) * 1.05);
-      const a = off * 1.05;
+      const sp = Math.min(MAX_SPEED, Math.hypot(b.vx, b.vy) * 1.03);
+      const a = off * 0.9;
       b.vx = Math.sin(a) * sp;
       b.vy = -Math.cos(a) * sp;
       b.y = PADDLE_Y - BALL_R;
-      this.aiErr = (Math.random() - 0.5) * 2 * (1.5 + 0.4 * Math.min(4, this.points));
+      // The CPU aims sloppier the more you hit it.
+      this.aiErr = (Math.random() - 0.5) * 2 * (2 + 0.5 * Math.min(4, this.points));
       this.ctx.sfx.hit();
       this.ctx.fx.burst(b.x, b.y, PALETTES.paddle.player, 4, 3);
     }
@@ -141,7 +147,7 @@ export class Paddle extends Mode {
     const ahw = this.aw() / 2;
     if (ahw > 0 && b.vy < 0 && b.y - BALL_R <= AI_Y + PH && b.y + BALL_R >= AI_Y && Math.abs(b.x - this.ax) <= ahw + BALL_R) {
       const off = clamp((b.x - this.ax) / ahw, -1, 1);
-      const sp = Math.min(22, Math.hypot(b.vx, b.vy) * 1.04);
+      const sp = Math.min(MAX_SPEED, Math.hypot(b.vx, b.vy) * 1.02);
       const a = off * 0.9;
       b.vx = Math.sin(a) * sp;
       b.vy = Math.cos(a) * sp;
@@ -171,9 +177,18 @@ export class Paddle extends Mode {
       this.ctx.fx.doFlash(PALETTES.paddle.player, 0.25);
       this.serve();
     } else if (b.y > 24.5) {
-      this.dead = true;
-      this.ctx.sfx.die();
-      this.ctx.loseLife();
+      this.cpu++;
+      if (this.cpu >= CPU_PER_LIFE) {
+        this.cpu = 0;
+        this.dead = true;
+        this.ctx.sfx.die();
+        this.ctx.loseLife();
+      } else {
+        this.ctx.sfx.wall();
+        this.ctx.fx.doFlash('#ff3040', 0.2);
+        this.ctx.toast(`CPU bod ${this.cpu}/${CPU_PER_LIFE}`);
+        this.serve();
+      }
     }
   }
 
@@ -190,7 +205,7 @@ export class Paddle extends Mode {
       if (x > span) x = 2 * span - x;
       tx = x + LEFT + this.aiErr;
     }
-    const maxV = (5.5 + 1.2 * (this.ctx.round - 1)) * (this.ctx.speed > 1 ? 1.1 : 1);
+    const maxV = 4.5 + 1 * (this.ctx.round - 1);
     const d = tx - this.ax;
     this.ax += clamp(d, -maxV * dt, maxV * dt);
     this.ax = clamp(this.ax, LEFT + 1.5, RIGHT - 1.5);
