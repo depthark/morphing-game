@@ -1,37 +1,37 @@
 # MORPH
 
-Retro hry, ktoré sa ti menia priamo pod rukami. Keď splníš míľnik, aktuálna hra sa začne postupne prelievať do ďalšej. Pravidlá, grafika, hudba aj ovládanie sa menia počas hrania.
+Retro games that morph into each other right under your hands. Hit a game's milestone and it starts blending into the next one: rules, graphics, music and controls all change while you keep playing.
 
-**▶ Hraj:** https://depthark.github.io/morphing-game/
+**▶ Play:** https://depthark.github.io/morphing-game/
 
-## Reťaz
+## The chain
 
-| Hra | Míľnik | Morph do ďalšej |
+| Game | Milestone | Morph into the next game |
 |---|---|---|
-| SNAKE | dĺžka 10 | Namiesto jabĺk sa objavia čerešne a chomperi. Každý skráti hada a okolo rastie bludisko. |
-| CHOMPER | zjedz 2 duchov | SPACE kladie bomby, steny sa menia na tehly a piliere, duchovia sa dajú vybuchnúť. |
-| BOMBER | znič všetkých nepriateľov | Tehly sa zoradia do formácie votrelcov a piliere do štítov. Gravitácia ťa stiahne dole, z bômb sú strely. |
-| ALIEN RAID | zostreľ všetkých okrem 5 | Strely sa odrážajú, votrelci sa zlepia do súperovho pádla a loď sa sploští na pádlo. |
-| PADDLE | 5 bodov proti CPU | Na loptičku začne pôsobiť gravitácia, SPACE = mávnutie, prichádzajú potrubia. |
-| FLAPPER | prelet 8 potrubí | Potrubia sa rozpadnú na bloky, ktoré popadajú do vznikajúcej jamy. |
-| BLOCKFALL | 4 riadky | Padajúci kúsok ožije ako had a stack sa zmení na drobky na jedenie. Nasleduje ďalšie kolo, rýchlejšie. |
+| SNAKE | length 10 | Apples turn into cherries and chompers that shrink you, while a maze grows around you |
+| CHOMPER | eat 2 ghosts | SPACE drops bombs, walls turn into bricks and pillars, ghosts can be blown up |
+| BOMBER | destroy every enemy | Bricks line up as an invader formation, pillars become shields, gravity pulls you down, bombs become shots |
+| ALIEN RAID | shoot all but the last 5 | Shots bounce, invaders weld into the CPU paddle, your ship flattens into a paddle |
+| PADDLE | 5 points vs. the CPU | Gravity seeps into the ball, SPACE = flap, pipes stream in |
+| FLAPPER | pass 8 pipes | Pipes crumble into blocks that fall into a rising well |
+| BLOCKFALL | 4 lines | The falling piece comes alive as a snake and the stack turns into crumbs. Next loop, faster |
 
-Skóre a 3 životy sú spoločné pre všetky hry. Hore v strede je lišta: počas hry sa plní k míľniku, počas morphu sa vyprázdňuje.
+Score and 3 lives are shared across every game. The bar at the top fills toward the milestone and drains during the morph.
 
-## Ovládanie
+## Controls
 
-- **Klávesnica:** šípky / WASD, SPACE akcia (bomba, streľba, mávnutie, hard drop), ↑ / X otočenie, Z otočenie naopak, P pauza, M zvuk
-- **Dotyk:** swipe = smer, tap = akcia (v Tetrise otočenie, swipe ↓ = drop), ťahanie prstom = pádlo / loď
+- **Keyboard:** arrows / WASD, SPACE action (bomb, shoot, flap, hard drop), ↑ / X rotate, Z rotate back, P pause, M sound
+- **Touch:** swipe = direction, tap = action (rotate in Blockfall, swipe ↓ = drop), drag = paddle / ship
 
-## Vývoj
+## Development
 
 ```bash
 bun install
 bun run dev      # http://localhost:5173
-bun run test     # simulácia celej reťaze (2 kolá) + kontrola bludiska
+bun run test     # simulates the whole chain (2 loops) + maze checks
 bun run build
 ```
 
-Debug: `?debug` zapne klávesu **N** (skok na morph / dokončenie morphu), `?start=bomber` spustí priamo danú hru.
+Debug: `?debug` enables the **N** key (jump to the morph / finish it), `?start=bomber` starts at a given game.
 
-Po pushi na `main` sa hra automaticky nasadí na GitHub Pages (`.github/workflows/static.yml`).
+Every push to `main` deploys to GitHub Pages (`.github/workflows/static.yml`).

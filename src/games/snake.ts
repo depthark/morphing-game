@@ -88,16 +88,16 @@ export class Snake extends Mode {
   }
 
   milestone(): Milestone {
-    if (this.introP < 1) return { cur: this.crumbTotal - this.crumbs.length, target: this.crumbTotal, label: 'drobky' };
-    if (this.morphing) return { cur: this.startLen - this.body.length, target: this.startLen - 1, label: 'čerešne' };
-    return { cur: this.body.length, target: this.target, label: 'dĺžka' };
+    if (this.introP < 1) return { cur: this.crumbTotal - this.crumbs.length, target: this.crumbTotal, label: 'crumbs' };
+    if (this.morphing) return { cur: this.startLen - this.body.length, target: this.startLen - 1, label: 'cherries' };
+    return { cur: this.body.length, target: this.target, label: 'length' };
   }
 
   hint() {
-    return '← ↑ → ↓ / swipe · zatáčaj';
+    return '← ↑ → ↓ / swipe · steer';
   }
   morphHint() {
-    return 'Zjedz čerešne a zmenši sa na 1\nsteny ťa teraz nezabijú';
+    return 'Eat cherries and shrink to 1\nwalls can’t kill you now';
   }
 
   protected override onMorphStart() {

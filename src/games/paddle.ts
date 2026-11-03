@@ -74,15 +74,15 @@ export class Paddle extends Mode {
   }
 
   milestone(): Milestone {
-    if (this.morphing) return { cur: this.passed, target: 6, label: 'potrubia' };
-    return { cur: this.points, target: this.target, label: `CPU ${this.cpu}/${CPU_PER_LIFE} · body` };
+    if (this.morphing) return { cur: this.passed, target: 6, label: 'pipes' };
+    return { cur: this.points, target: this.target, label: `CPU ${this.cpu}/${CPU_PER_LIFE} · points` };
   }
 
   hint() {
-    return this.morphing ? 'SPACE / ↑ / tap = mávni · ← → pádlo' : '← → / ťahaj prstom · odpinkaj loptičku';
+    return this.morphing ? 'SPACE / ↑ / tap = flap · ← → paddle' : '← → / drag · hit the ball back';
   }
   morphHint() {
-    return 'Loptička padá. SPACE / tap = mávni!';
+    return 'The ball is falling. SPACE / tap = flap!';
   }
 
   private serve() {
@@ -186,7 +186,7 @@ export class Paddle extends Mode {
       } else {
         this.ctx.sfx.wall();
         this.ctx.fx.doFlash('#ff3040', 0.2);
-        this.ctx.toast(`CPU bod ${this.cpu}/${CPU_PER_LIFE}`);
+        this.ctx.toast(`CPU point ${this.cpu}/${CPU_PER_LIFE}`);
         this.serve();
       }
     }

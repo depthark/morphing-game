@@ -75,15 +75,15 @@ export class Flapper extends Mode {
   }
 
   milestone(): Milestone {
-    if (this.morphing) return { cur: Math.round(this.p * 100), target: 100, label: 'rozpad' };
-    return { cur: this.passed, target: this.target, label: 'potrubia' };
+    if (this.morphing) return { cur: Math.round(this.p * 100), target: 100, label: 'collapse' };
+    return { cur: this.passed, target: this.target, label: 'pipes' };
   }
 
   hint() {
-    return 'SPACE / ↑ / tap = mávni krídlami';
+    return 'SPACE / ↑ / tap = flap';
   }
   morphHint() {
-    return 'Potrubia sa rozpadávajú do jamy…';
+    return 'The pipes are crumbling into the well…';
   }
 
   update(dt: number) {

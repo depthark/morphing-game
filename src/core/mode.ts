@@ -13,6 +13,10 @@ interface Particle {
   color: string;
   size: number;
   g: number;
+  /** Confetti: horizontal flutter amplitude and phase; h = height in px. */
+  sway?: number;
+  phase?: number;
+  h?: number;
 }
 
 /** Particles, screen shake and flashes. Coordinates in board cells. */
@@ -32,6 +36,28 @@ export class Fx {
     if (this.parts.length > 600) this.parts.splice(0, this.parts.length - 600);
   }
 
+  /** Pixel confetti raining from the top edge. */
+  confetti(n: number, colors: string[], width: number) {
+    for (let i = 0; i < n; i++) {
+      const life = 2.5 + Math.random() * 2;
+      this.parts.push({
+        x: Math.random() * width,
+        y: -0.5,
+        vx: (Math.random() - 0.5) * 1.5,
+        vy: 2 + Math.random() * 3,
+        life,
+        max: life,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        size: Math.random() < 0.5 ? 2 : 1,
+        h: Math.random() < 0.5 ? 1 : 2,
+        g: 0.6,
+        sway: 2 + Math.random() * 3,
+        phase: Math.random() * 6.28,
+      });
+    }
+    if (this.parts.length > 900) this.parts.splice(0, this.parts.length - 900);
+  }
+
   doShake(amount: number) {
     this.shake = Math.max(this.shake, amount);
   }
@@ -45,7 +71,7 @@ export class Fx {
     for (const p of this.parts) {
       p.life -= dt;
       p.vy += p.g * dt;
-      p.x += p.vx * dt;
+      p.x += (p.vx + (p.sway ? Math.sin(p.life * 6 + (p.phase ?? 0)) * p.sway : 0)) * dt;
       p.y += p.vy * dt;
     }
     this.parts = this.parts.filter((p) => p.life > 0);
@@ -55,8 +81,8 @@ export class Fx {
 
   render(r: Renderer) {
     for (const p of this.parts) {
-      r.alpha(p.life / p.max);
-      r.rect(p.x * CELL - p.size / 2, p.y * CELL - p.size / 2, p.size, p.size, p.color);
+      r.alpha(p.sway ? Math.min(1, p.life) : p.life / p.max);
+      r.rect(p.x * CELL - p.size / 2, p.y * CELL - p.size / 2, p.size, p.h ?? p.size, p.color);
     }
     r.alpha(1);
   }

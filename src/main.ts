@@ -55,7 +55,33 @@ function resize() {
 new ResizeObserver(resize).observe(stage);
 resize();
 
-hud.screen('title', { score: 0, best: director.best, round: 1, newBest: false });
+hud.screen('title', { score: 0, best: director.best, newBest: false, stage: 1, lifeBonus: 0 });
+
+// Easter egg: the Konami code (or 7 quick taps on the game title on mobile)
+// gives 30 extra lives and switches on a CRT monitor look.
+const KONAMI = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'KeyB', 'KeyA'];
+let konamiPos = 0;
+const cheat = () => {
+  if (director.konami()) document.body.classList.add('crt');
+};
+window.addEventListener('keydown', (e) => {
+  if (e.repeat) return;
+  if (e.code === KONAMI[konamiPos]) konamiPos++;
+  else if (!(e.code === 'ArrowUp' && konamiPos === 2)) konamiPos = e.code === KONAMI[0] ? 1 : 0;
+  if (konamiPos === KONAMI.length) {
+    konamiPos = 0;
+    cheat();
+  }
+});
+let taps: number[] = [];
+document.getElementById('gname')!.addEventListener('pointerdown', () => {
+  const now = performance.now();
+  taps = [...taps.filter((t) => now - t < 2500), now];
+  if (taps.length >= 7) {
+    taps = [];
+    cheat();
+  }
+});
 
 let last = performance.now();
 function frame(now: number) {

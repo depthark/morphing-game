@@ -83,14 +83,14 @@ export class Blocks extends Mode {
   }
 
   milestone(): Milestone {
-    return { cur: this.lines, target: this.target, label: 'riadky' };
+    return { cur: this.lines, target: this.target, label: 'lines' };
   }
 
   hint() {
-    return '← → posun · ↑/X otoč · ↓ rýchlo · SPACE drop · (tap otoč, swipe ↓ drop)';
+    return '← → move · ↑/X rotate · ↓ soft drop · SPACE hard drop · (tap rotate, swipe ↓ drop)';
   }
   morphHint() {
-    return 'Kúsok ožil! ← ↑ → ↓';
+    return 'The piece came alive! ← ↑ → ↓';
   }
 
   private draw() {

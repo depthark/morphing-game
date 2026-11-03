@@ -116,15 +116,15 @@ export class Chomper extends Mode {
   }
 
   milestone(): Milestone {
-    if (this.morphing) return { cur: Math.round(this.p * 100), target: 100, label: 'prestavba' };
-    return { cur: this.eaten, target: this.target, label: 'duchovia' };
+    if (this.morphing) return { cur: Math.round(this.p * 100), target: 100, label: 'rebuild' };
+    return { cur: this.eaten, target: this.target, label: 'ghosts' };
   }
 
   hint() {
-    return this.morphing ? '← ↑ → ↓ pohyb · SPACE / tap bomba' : '← ↑ → ↓ / swipe · power pellet → zjedz duchov';
+    return this.morphing ? '← ↑ → ↓ move · SPACE / tap bomb' : '← ↑ → ↓ / swipe · power pellet → eat the ghosts';
   }
   morphHint() {
-    return 'SPACE / tap = bomba!';
+    return 'SPACE / tap = bomb!';
   }
 
   private walkable = (c: number, r: number) => {
@@ -207,7 +207,7 @@ export class Chomper extends Mode {
     if (!this.morphing && !this.dots.some((x) => x)) {
       this.ctx.addScore(500);
       this.ctx.sfx.bonus();
-      this.ctx.toast('Bludisko čisté! +500');
+      this.ctx.toast('Maze cleared! +500');
       const md = parseMaze().dots;
       md.forEach((v, k) => {
         if (this.tiles[k] === T.EMPTY) this.dots[k] = v;

@@ -16,7 +16,7 @@ const noopCtx = new Proxy(
 
 const hud: HudSink = { render() {}, toast() {}, screen() {} };
 
-function sim(start: GameId, loops: number) {
+function sim(start: GameId) {
   const input = new Input();
   const d = new Director(input, new Audio(), hud, start);
   d.debug = true;
@@ -27,8 +27,7 @@ function sim(start: GameId, loops: number) {
   let t = 0;
   let sinceSwitch = 0;
   let frames = 0;
-  const target = ORDER.length * loops;
-  while (seen.length <= target && t < 3000) {
+  while (d.screen !== 'win' && t < 3000) {
     d.lives = 99;
     frames++;
     // pseudo-player: mash inputs
@@ -52,18 +51,40 @@ function sim(start: GameId, loops: number) {
 }
 
 describe('morph chain', () => {
-  it('runs two full loops through every game and transition', () => {
-    const { seen, d } = sim('snake', 2);
-    const expected = [...ORDER, ...ORDER, 'snake'];
-    expect(seen).toEqual(expected);
-    expect(d.round).toBe(3);
+  it('plays through every game and transition, then wins (no loop)', () => {
+    const { seen, d } = sim('snake');
+    expect(seen).toEqual(ORDER);
+    expect(d.screen).toBe('win');
+    expect(d.mode.id).toBe('blocks');
+    expect(d.lifeBonus).toBe(d.lives * 1000);
     expect(d.score).toBeGreaterThan(0);
   });
 
-  it.each(ORDER)('can start directly at %s', (id) => {
-    const { seen } = sim(id, 1);
-    expect(seen.length).toBe(ORDER.length + 1);
-    expect(seen[seen.length - 1]).toBe(id);
+  it.each(ORDER)('can start directly at %s and reach the win screen', (id) => {
+    const { seen, d } = sim(id);
+    expect(seen).toEqual(ORDER.slice(ORDER.indexOf(id)));
+    expect(d.screen).toBe('win');
+  });
+
+  it('starts with 5 lives and the Konami code adds 30 once', () => {
+    const input = new Input();
+    const d = new Director(input, new Audio(), hud, 'snake');
+    d.newGame();
+    expect(d.lives).toBe(5);
+    expect(d.konami()).toBe(true);
+    expect(d.lives).toBe(35);
+    expect(d.konami()).toBe(false);
+    expect(d.lives).toBe(35);
+  });
+
+  it('keeps celebrating on the win screen without errors', () => {
+    const { d } = sim('blocks');
+    const r = new Renderer(noopCtx);
+    for (let k = 0; k < 600; k++) {
+      d.update(1 / 60);
+      d.render(r);
+    }
+    expect(d.fx.parts.length).toBeGreaterThan(0);
   });
 });
 

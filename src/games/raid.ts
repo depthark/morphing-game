@@ -81,15 +81,15 @@ export class Raid extends Mode {
   }
 
   milestone(): Milestone {
-    if (this.morphing) return { cur: this.converted, target: this.remainAtStart, label: 'pádlo' };
-    return { cur: this.kills, target: this.target, label: 'votrelci' };
+    if (this.morphing) return { cur: this.converted, target: this.remainAtStart, label: 'paddle' };
+    return { cur: this.kills, target: this.target, label: 'invaders' };
   }
 
   hint() {
-    return this.morphing ? '← → / ťahaj · strely sa odrážajú od lode' : '← → / ťahaj prstom · SPACE / tap strieľaj';
+    return this.morphing ? '← → / drag · shots bounce off your ship' : '← → / drag · SPACE / tap shoot';
   }
   morphHint() {
-    return 'Strely sa odrážajú. Odpinkaj ich!';
+    return 'Shots bounce now. Hit them back!';
   }
 
   invPos(v: Invader) {
@@ -145,7 +145,7 @@ export class Raid extends Mode {
       const p = this.invPos(v);
       for (let c = Math.floor(p.x); c <= Math.floor(p.x + 0.99); c++) this.shields.delete(idx(c, Math.floor(p.y + 0.99)));
       if (p.y + 1 >= SHIP_ROW && this.invuln <= 0) {
-        this.ctx.toast('Invázia!');
+        this.ctx.toast('Invasion!');
         return this.die();
       }
     }

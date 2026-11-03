@@ -95,16 +95,16 @@ export class Bomber extends Mode {
   }
 
   milestone(): Milestone {
-    if (this.morphing) return { cur: Math.round(this.p * 100), target: 100, label: 'invázia' };
-    return { cur: this.kills, target: this.target, label: 'nepriatelia' };
+    if (this.morphing) return { cur: Math.round(this.p * 100), target: 100, label: 'invasion' };
+    return { cur: this.kills, target: this.target, label: 'enemies' };
   }
 
   hint() {
-    if (this.morphing && this.p > 0.3) return '← → pohyb · SPACE / tap strieľaj';
-    return '← ↑ → ↓ drž / swipe · SPACE / tap bomba';
+    if (this.morphing && this.p > 0.3) return '← → move · SPACE / tap shoot';
+    return '← ↑ → ↓ hold / swipe · SPACE / tap bomb';
   }
   morphHint() {
-    return 'Gravitácia ťa ťahá dole!';
+    return 'Gravity is pulling you down!';
   }
 
   private walkable = (c: number, r: number) => {
@@ -163,7 +163,7 @@ export class Bomber extends Mode {
       if (item === 'flame') this.range = Math.min(5, this.range + 1);
       else this.maxBombs = Math.min(4, this.maxBombs + 1);
       this.ctx.sfx.bonus();
-      this.ctx.toast(item === 'flame' ? 'Dosah +1' : 'Bomby +1');
+      this.ctx.toast(item === 'flame' ? 'Range +1' : 'Bombs +1');
     }
 
     if (input.wasPressed('action')) {

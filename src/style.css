@@ -140,33 +140,6 @@ body {
   box-shadow: 0 0 0 1px #ffffff14, 0 0 40px color-mix(in srgb, var(--accent) 18%, transparent);
 }
 
-#toast {
-  position: absolute;
-  top: 22%;
-  left: 50%;
-  transform: translate(-50%, -8px);
-  max-width: calc(100% - 32px);
-  padding: 10px 14px;
-  background: #000000c0;
-  border: 1px solid color-mix(in srgb, var(--accent) 60%, transparent);
-  font-size: 9px;
-  line-height: 1.8;
-  text-align: center;
-  color: #ddd;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.25s, transform 0.25s;
-}
-#toast.show {
-  opacity: 1;
-  transform: translate(-50%, 0);
-}
-.toast-head {
-  color: var(--accent);
-  font-size: 12px;
-  margin-bottom: 4px;
-}
-
 .screen {
   position: absolute;
   inset: 0;
@@ -197,6 +170,12 @@ body {
   font-size: 20px;
   color: var(--accent);
 }
+.screen h2.win {
+  font-size: clamp(16px, 5.5vw, 22px);
+  line-height: 1.6;
+  color: var(--accent);
+  text-shadow: 2px 2px 0 #ff4f9a, -2px -2px 0 #46e0ff;
+}
 .screen p {
   margin: 0;
   max-width: 34em;
@@ -224,6 +203,7 @@ body {
 }
 
 #hint {
+  transition: color 0.2s;
   padding: 6px 16px 12px;
   font-size: 8px;
   line-height: 1.8;
@@ -235,6 +215,52 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .blink,
   .bar.morph #bar-fill {
+    animation: none;
+  }
+}
+
+/* A message briefly lights up the hint line instead of covering the board. */
+#hint.flash {
+  color: var(--accent);
+  animation: hint-pop 0.35s steps(3);
+}
+@keyframes hint-pop {
+  from {
+    transform: scale(1.15);
+  }
+}
+
+/* Victory: let the parade and confetti on the canvas show through. */
+.screen.win {
+  justify-content: flex-start;
+  padding-top: 8%;
+  background: transparent;
+  text-shadow: 2px 2px 0 #000;
+}
+
+/* Easter egg: CRT monitor look (scanlines, vignette, flicker). */
+body.crt #stage::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(0deg, #0000 0 2px, #00000059 2px 3px),
+    radial-gradient(ellipse at center, #0000 55%, #000000b0 100%);
+  animation: crt-flicker 0.12s steps(2) infinite;
+}
+body.crt #game {
+  filter: saturate(1.4) contrast(1.15) brightness(1.1);
+  border-radius: 12px;
+}
+@keyframes crt-flicker {
+  50% {
+    opacity: 0.85;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  body.crt #stage::after,
+  #hint.flash {
     animation: none;
   }
 }
